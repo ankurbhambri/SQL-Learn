@@ -1,4 +1,4 @@
--- Using a CTE to calculate the most and least expensive products in each category
+-- Using 'CTE' to calculate the most and least expensive products in each category
 
 WITH cte AS (
     SELECT
