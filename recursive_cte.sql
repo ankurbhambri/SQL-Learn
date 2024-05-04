@@ -1,4 +1,4 @@
--- Counting 1 to N
+-- Counting 1 to N numbers
 
 with recursive cte as (
 	select 1 as n
