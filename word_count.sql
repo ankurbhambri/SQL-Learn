@@ -1,6 +1,6 @@
 -- https://platform.stratascratch.com/coding/9814-counting-instances-in-text/official-solution?code_type=1
 
--- Counting Instances in Text
+-- Counting Instances in the Text
 
 SELECT 
     word,nentry                                       
