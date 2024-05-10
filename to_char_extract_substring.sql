@@ -8,7 +8,7 @@ SELECT
   EXTRACT(DAY FROM TO_DATE('2024-05-27', 'YYYY-MM-DD')) AS day
 
 
--- To_Char more usecases
+-- To_Char usecases
 
 SELECT
   TO_CHAR(12345.678, '99999.99') AS formatted_number,
