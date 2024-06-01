@@ -7,6 +7,9 @@ who can be accommodated in each lift without exceeding the lift's capacity.
 
 The passengers in the list should be ordered by their weight in increasing order.
 You can assume that the weights of the passengers are unique within each lift.
+
+https://medium.com/@singhsalujamandeep222/sql-interview-problem-by-capgemini-3d7133255c23
+
 */
 
 with cte as (
