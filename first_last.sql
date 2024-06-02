@@ -1,5 +1,5 @@
 -- By default, the frame clause is set to 'RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW'.
--- It will access all records from the start to the end of the partition with 'RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING'.
+-- It will access/copy the final column value from the start to the end of that column with 'RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING'.
 -- If you use 'ROWS' instead of 'RANGE' and end with 'CURRENT ROW' like this - 'ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW' - it will consider only the current row.
 
 SELECT *,

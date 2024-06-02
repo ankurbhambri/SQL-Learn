@@ -37,3 +37,12 @@ select *,
 	when salary = lag(salary) over(partition by dept order by id) then 'Same as previous employee' 
 	else 'Less than previous employee' end
 from employees;
+
+
+
+-- Wthout LAG or LEAD
+
+with cte as (select row_number() over() id, amount from orders)
+select a.id, a.amount - b.amount as rv  from cte a left join cte b on a.id =  b.id + 1 -- for previous add
+union all
+select a.id, a.amount - b.amount  from cte a left join cte b on a.id =  b.id - 1 -- for next subract
