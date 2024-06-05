@@ -46,3 +46,21 @@ with cte as (select row_number() over() id, amount from orders)
 select a.id, a.amount - b.amount as rv  from cte a left join cte b on a.id =  b.id + 1 -- for previous add
 union all
 select a.id, a.amount - b.amount  from cte a left join cte b on a.id =  b.id - 1 -- for next subract
+
+
+
+-- Example
+
+with cte as (select 
+	brand, 
+	year, 
+	amount,
+	case when amount < lead(amount, 1, amount + 1) over(partition by brand order by year) -- amount + 1 is to make sure that next value is not null
+	then 1 else 0
+	end as flag
+from brands
+)
+select
+	brand, year, amount, flag
+from cte
+where brand not in (select brand from cte where flag= 0)
