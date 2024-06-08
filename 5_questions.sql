@@ -23,3 +23,45 @@ select lift_id, string_agg(passenger_name, ', ') from cte where sm <= capacity_k
 --  Total runs score in each over in T20 match format
 
 select x.tc, sum(runs) from (SELECT *, ntile(20) over(order by balls) tc FROM match_score) x group by x.tc order by 1
+
+-- Find child, parent, grandparent
+
+CREATE TABLE person (
+    person VARCHAR(50) NOT NULL,
+    parent VARCHAR(50) NOT NULL
+);
+
+INSERT INTO person (person, parent) VALUES
+('A', 'X'),
+('B', 'Y'),
+('X', 'X1'),
+('Y', 'Y1'),
+('X1', 'X2'),
+('Y1', 'Y2');
+
+select c.person child, c.parent, p.parent grandparent 
+from person c 
+left join person p on c.parent = p.person
+
+
+-- Employee hierarchy with or without recursion
+
+SELECT e.id, e.name, m.id manager_id, m.name AS manager_name
+FROM employees e
+LEFT JOIN employees m ON e.manager_id = m.id
+order by e.id
+
+WITH RECURSIVE employee_hierarchy AS (
+    SELECT id, name, manager_id
+    FROM employees
+    WHERE manager_id IS NULL
+    UNION ALL
+    SELECT e.id, e.name, e.manager_id
+    FROM employees e
+    JOIN employee_hierarchy eh ON e.manager_id = eh.id
+)
+SELECT id, name, manager_id
+FROM employee_hierarchy
+ORDER BY id;
+
+
