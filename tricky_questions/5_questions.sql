@@ -37,11 +37,13 @@ INSERT INTO person (person, parent) VALUES
 ('X', 'X1'),
 ('Y', 'Y1'),
 ('X1', 'X2'),
-('Y1', 'Y2');
+('Y1', 'Y2'),
+('X2', 'X3');
 
-select c.person child, c.parent, p.parent grandparent 
+select c.person child, c.parent, p.parent grandparent, g.parent as great_grandparent
 from person c 
 left join person p on c.parent = p.person
+left join person g on p.parent = g.person
 
 
 -- Employee hierarchy with or without recursion
