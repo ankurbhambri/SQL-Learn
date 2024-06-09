@@ -73,7 +73,7 @@ create table events
 
 with cte as (
 	select 
-		INITCAP(e.status) status, -- to make it capital
+		INITCAP(e.status) status, -- to make first char capital
 		Concat(a.first_name, ' ', a.last_name) customer,
 		string_agg(distinct b.name, ', ') campaign,
 		count(1) total,

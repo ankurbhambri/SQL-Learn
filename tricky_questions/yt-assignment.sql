@@ -32,3 +32,5 @@ Note - Data is not provided for these tables, you can insert some dummy data if 
     Calculate each students attendance percentage for all the sessions.
 
 */
+
+-- TODO

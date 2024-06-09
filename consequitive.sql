@@ -1,4 +1,5 @@
 -- Using a CTE to calculate the most and least expensive products in each category
+
 WITH cte AS (
     SELECT
         name, 
@@ -11,7 +12,6 @@ WITH cte AS (
         LAST_VALUE(model) OVER (PARTITION BY category ORDER BY price DESC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS least_expensive_product_name
     FROM products
 )
--- Select the category, model, price, most expensive product, and least expensive product from the CTE
 SELECT 
     category, 
     model, 
@@ -21,6 +21,7 @@ SELECT
 FROM cte;
 
 -- Query to find users who have logged in consecutively 3 or more times
+
 SELECT DISTINCT repeated_names
 FROM (
     SELECT *,

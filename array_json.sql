@@ -21,13 +21,13 @@ VALUES
 ('Atlanta', '{TV,"Wireless Internet","Air conditioning","Smoke detector","Carbon monoxide detector",Essentials,"Lock on bedroom door",Hangers,Iron,"Fire extinguisher"}');
 
 
--- Count array length of column values
-SELECT city, array_length(string_to_array(array_values, ','), 1) AS number_of_amenities
-FROM arrayTable;
-
 -- Convert a comma-separated string into an array using string_to_array.
 SELECT string_to_array('TV,Wireless Internet,Air conditioning', ',') AS amenities_array;
 
+
+-- Count array length of column values
+SELECT city, array_length(string_to_array(array_values, ','), 1) AS number_of_amenities
+FROM arrayTable;
 
 -- Count the number of unique values in array_values column across all entries.
 SELECT COUNT(DISTINCT unnest(string_to_array(array_values, ','))) AS unique_amenities_count
