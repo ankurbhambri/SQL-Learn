@@ -12,26 +12,24 @@ WITH cte AS (
         LAST_VALUE(model) OVER (PARTITION BY category ORDER BY price DESC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS least_expensive_product_name
     FROM products
 )
-SELECT 
-    category, 
-    model, 
-    price, 
-    expensive_product_name, 
-    least_expensive_product_name 
-FROM cte;
+SELECT * FROM cte;
+
 
 -- Query to find users who have logged in consecutively 3 or more times
 
 SELECT DISTINCT repeated_names
 FROM (
-    SELECT *,
-           -- Check if the current user_name is the same as the next two user_name values
-           CASE 
-               WHEN user_name = LEAD(user_name) OVER (ORDER BY login_id)
-                    AND user_name = LEAD(user_name, 2) OVER (ORDER BY login_id)
-               THEN user_name 
-               ELSE NULL 
-           END AS repeated_names
+    SELECT
+        *,
+        -- Check if the current user_name is the same as the next two user_name values
+        CASE
+            WHEN
+                user_name = LEAD(user_name) OVER (ORDER BY login_id) AND
+                user_name = LEAD(user_name, 2) OVER (ORDER BY login_id)
+            THEN
+                user_name
+            END AS repeated_names
+
     FROM login_details
 ) AS x
 -- Filter out rows where repeated_names is not null
