@@ -22,22 +22,38 @@ create table results
     votes               int
 );
 
-Output :
+Output :-
 Party 		seats_won
 Democratic 		2
 Republic 		1
 
 */
 
-select * from candidates;
-with cte as (select constituency_id, max(votes) mv from results group by constituency_id),
-cte2 as (select r.constituency_id, r.candidate_id from results r join cte c on r.constituency_id=c.constituency_id and r.votes=c.mv)
+with cte as (
+	select constituency_id, max(votes) mv from results group by constituency_id
+),
+cte2 as (
+	select r.candidate_id from results r join cte c on r.constituency_id=c.constituency_id and r.votes=c.mv
+)
 select a.party, count(a.id) from candidates a join cte2 b on a.id=b.candidate_id group by a.party order by 2 desc
 
 -- using partition by clause
 
-with cte as (select constituency_id, candidate_id, votes, dense_rank() over(partition by constituency_id order by votes desc) rn from results)
-select b.party, count(*) from cte a join candidates b on a.candidate_id=b.id where rn = 1 group by b.party order by 2 desc
+with cte as (
+	select 
+		constituency_id, 
+		candidate_id, votes, 
+		dense_rank() over(partition by constituency_id order by votes desc) rn 
+	from results
+)
+select 
+	b.party, count(*) 
+from 
+	cte a 
+join 
+	candidates b on a.candidate_id=b.id where rn = 1 
+group by b.party 
+order by 2 desc
 
 
 /*
@@ -69,21 +85,34 @@ create table events
     status      varchar(50)
 );
 
+Output :-
+
+"status"	"customer"				"campaign"								 "total"
+"success"	"Carolyn O'Lunny"	"Business Rules, Overcoming Challenges"			8
+"failure"	"Melessa Rowesby"	"MMC, Quantitative Finance"						9
+
 */
 
 with cte as (
 	select 
-		INITCAP(e.status) status, -- to make first char capital
+		e.status,
 		Concat(a.first_name, ' ', a.last_name) customer,
 		string_agg(distinct b.name, ', ') campaign,
 		count(1) total,
 		dense_rank() over(partition by e.status order by count(1) desc) rnk
-	from customers a 
-	join campaigns b on a.id=b.customer_id 
-	join events e on e.campaign_id=b.id
+	from
+		customers a 
+	join
+		campaigns b on a.id=b.customer_id
+	join
+		events e on e.campaign_id=b.id
 	group by status, 2
 )
-select status, customer, campaign, total from cte where rnk=1 order by status desc
+select
+	status, customer, campaign, total 
+from cte 
+where rnk=1 
+order by 1 desc
 
 
 /*
@@ -112,6 +141,12 @@ create table results_tab
     candidate_id    int,
     state           varchar(50)
 );
+
+Output :-
+
+"candidate_name"	"1st_place"		   			"2nd_place"	 	"3rd_place"
+"Davide Kentish"	"California(5)"				"Texas(3)"	 	"Alabama(2)"
+"Thorstein Bridge"	"California(3), Texas(3)"	"New York(2)"	"Alabama(1)"
 
 */
 

@@ -88,7 +88,8 @@ SELECT *
 FROM (
     SELECT *, COUNT(1) OVER (PARTITION BY x.rn) AS diff 
     FROM (
-        SELECT *, day - CAST(ROW_NUMBER() OVER (ORDER BY day) AS INT) AS rn
+        SELECT *, 
+            day - CAST(ROW_NUMBER() OVER (ORDER BY day) AS INT) AS rn
         FROM weather 
         WHERE temperature < 0
     ) AS x

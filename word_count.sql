@@ -7,5 +7,5 @@ SELECT
 FROM  
     ts_stat('SELECT to_tsvector(contents) FROM google_file_store') 
 WHERE
-         ILIKE 'bull' or word ILIKE 'bear'
+    ILIKE 'bull' or word ILIKE 'bear'
 

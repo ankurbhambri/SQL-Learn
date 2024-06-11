@@ -8,13 +8,13 @@ with cte as (
         sum(value) as curr_rv,
         lag(sum(value)) over() prev_rv
     from sf_transactions
-    group by to_char(created_at, 'YYYY-MM')
+    group by 1
 )
 select
     year_month,
     (curr_rv - prev_rv) * 100 / prev_rv as revenue_diff_pct
 from cte
-order by year_month;
+order by 1;
 
 
 -- Without lag and using left join
@@ -24,7 +24,7 @@ with cte as (
         to_char(created_at, 'YYYY-MM') as year_month,
         sum(value) as curr_rv
     from sf_transactions
-    group by to_char(created_at, 'YYYY-MM')
+    group by 1
 )
 select
     c1.year_month, c1.curr_rv, c2.curr_rv, c2.year_month,

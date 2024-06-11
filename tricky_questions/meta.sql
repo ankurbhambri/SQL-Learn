@@ -104,9 +104,9 @@ Question 4
 Question 5
 
 -- The VP of Sales feels that some product categories don't sell
- -- and can be completely removed from the inventory.
- -- As a first pass analysis, they want you to find what percentage
- -- of product categories have never been sold.
+-- and can be completely removed from the inventory.
+-- As a first pass analysis, they want you to find what percentage
+-- of product categories have never been sold.
  
  EXPECTED OUTPUT:
  Note: Please use the column name(s) specified in the expected output in your solution.
@@ -133,7 +133,8 @@ limit 5
 
 3.
 
-select count(case when transaction_date=start_date or transaction_date=end_date then 1 end) * 100.0 / count(*) pct_of_transactions_on_first_or_last_day_of_valid_promotion 
+select 
+      count(case when transaction_date=start_date or transaction_date=end_date then 1 end) * 100.0 / count(*) pct_of_transactions_on_first_or_last_day_of_valid_promotion 
 from sales s join promotions p on s.promotion_id=p.promotion_id
 
 
@@ -148,8 +149,12 @@ group by product_family
 
 5.
 
-select (tc - count(distinct pc.product_category)) * 100.0 / tc  
-from (select count(distinct product_category) tc from product_classes),
-sales s
-join products p on s.product_id=p.product_id 
-join product_classes pc on pc.product_class_id=p.product_class_id
+select
+      (tc - count(distinct pc.product_category)) * 100.0 / tc  
+from 
+      (select count(distinct product_category) tc from product_classes), -- tc
+      sales s
+join 
+      products p on s.product_id=p.product_id 
+join 
+      product_classes pc on pc.product_class_id=p.product_class_id
