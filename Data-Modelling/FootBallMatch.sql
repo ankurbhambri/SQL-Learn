@@ -60,7 +60,6 @@ CREATE TABLE goal (
 -- How many wins did each team make?
 -- How many matches did each team win/lose per month and year?
 
-
 -- 1)
 SELECT
     team_id, COUNT(*) AS games_played
