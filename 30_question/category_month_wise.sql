@@ -1,3 +1,23 @@
+/*
+CREATE TABLE transactions (
+    transaction_id SERIAL PRIMARY KEY,
+    category VARCHAR(255) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    transaction_date DATE NOT NULL
+);
+
+INSERT INTO transactions (category, amount, transaction_date) VALUES
+('Electronics', 150.00, '2024-01-15'),
+('Groceries', 50.00, '2024-01-20'),
+('Electronics', 200.00, '2024-02-10'),
+('Clothing', 75.00, '2024-02-15'),
+('Groceries', 100.00, '2024-03-05'),
+('Clothing', 125.00, '2024-03-10');
+
+*/
+
+-- In this query, we are using the CASE statement to sum the amount for each month wise.
+
 SELECT 
     category,
     SUM(CASE WHEN Extract(month from transaction_date) = 1 THEN amount ELSE 0 END) AS January,
@@ -19,3 +39,33 @@ GROUP BY
 ORDER BY 
     category;
 
+
+
+/*
+CREATE TABLE movies (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    movie_genre VARCHAR(255) NOT NULL
+);
+
+INSERT INTO movies (name, movie_genre) VALUES
+('Movie1', 'Action,Drama'),
+('Movie2', 'Comedy,Action'),
+('Movie3', 'Drama,Romance'),
+('Movie4', 'Action,Comedy,Drama'),
+('Movie5', 'Horror,Thriller'),
+('Movie6', 'Comedy,Romance'),
+('Movie7', 'Action,Thriller');
+*/
+
+-- Here, we are using the unnest() function to split the movie_genre column into multiple rows and then counting the number of movies for each genre.
+
+SELECT 
+    unnest(string_to_array(movie_genre, ',')) AS genre, 
+    COUNT(1) AS movie_count 
+FROM 
+    movies 
+GROUP BY 
+    1 
+ORDER BY 
+    2 DESC;
