@@ -22,13 +22,18 @@ INSERT INTO hotel_ratings (hotel, year, rating) VALUES
 
 */
 
-select *, row_number() over(partition by hotel order by rating) from hotel_ratings
 
 select 
-	hotel, min(rating), max(rating), 
+	hotel, min(rating), max(rating), round(avg(rating), 2) average,
 	percentile_cont(0.1) within group(order by rating) "P10",
 	percentile_cont(0.5) within group(order by rating) "P50",
 	percentile_cont(0.75) within group(order by rating) "P75", 
 	percentile_cont(0.9) within group(order by rating) "P90",
 	percentile_cont(0.99) within group(order by rating) "P99"
-from hotel_ratings group by hotel
+from hotel_ratings 
+group by hotel
+
+
+-- Now, we can remove values based on the difference between the rating and the average value abs(rating - average), 
+-- and then rank them. If this difference is higher than others, rank it as 1 and remove it.
+-- Or we can remove values greater than average value by 1 or 2 whatever logic we want to add.

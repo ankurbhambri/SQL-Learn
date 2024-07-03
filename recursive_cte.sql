@@ -20,25 +20,24 @@ SELECT * from pairs;
 
 -- Classical example of employee manager finding recursively
 
-WITH RECURSIVE cte AS (
-    -- Anchor member: Select top-level managers (where manager_id is NULL)
-    SELECT
-		employee_id, name, manager_id
-    FROM
-		Employees
-    WHERE
-		manager_id IS NULL -- starting point with root node
-    
+WITH RECURSIVE employee_hierarchy AS (
+    SELECT id, name, manager_id
+    FROM employees
+    WHERE manager_id IS NULL
     UNION ALL
-    
-    -- Recursive member: Join with Employees table to find subsequent managers
-    SELECT
-		e.employee_id, e.name, e.manager_id
-    FROM
-		Employees e
-    JOIN
-		cte c
-	ON
-		e.employee_id = c.manager_id
+    SELECT e.id, e.name, e.manager_id
+    FROM employees e
+    JOIN employee_hierarchy eh ON e.manager_id = eh.id
 )
-SELECT * FROM cte;
+SELECT id, name, manager_id
+FROM employee_hierarchy
+ORDER BY id;
+
+
+-- Count number of employees under a manager
+
+select m.name manager_name, count(1) no_of_employees
+from employees e
+join employees m on e.manager_id=m.id
+group by 1
+order by 2 desc, 1 asc
