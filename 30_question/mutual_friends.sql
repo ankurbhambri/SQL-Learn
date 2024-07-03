@@ -19,21 +19,36 @@ VALUES
 
 */
 
+-- WITH tmp AS (
+-- SELECT user_id, friend_id FROM Friendship
+-- UNION ALL
+-- SELECT friend_id, user_id FROM Friendship
+-- )
+-- SELECT
+-- 	ab.user_id
+-- 	,ab.friend_id
+-- 	,COUNT(*) AS common_friend
+-- FROM tmp AS ab
+-- JOIN tmp AS af
+-- 	ON ab.user_id = af.user_id
+-- JOIN tmp AS bf
+-- 	ON ab.friend_id = bf.user_id
+-- 	AND bf.friend_id = af.friend_id
+-- GROUP BY ab.user_id, ab.friend_id
+-- HAVING common_friend >= 3
+-- ORDER BY common_friend DESC;
+
+
+select * from friendships
+
 with cte as (
 	select FRIEND1, FRIEND2 from friendships
 	union all
 	select FRIEND2, FRIEND1 from friendships
-),
-cte2 as (
-	select FRIEND1, string_agg(FRIEND2, ',') agg from cte group by FRIEND1
-),
-cte3 as (
-	select
-		f.FRIEND1, c.agg f1, f.FRIEND2, c2.agg f2
-	from friendships f 
-	left join cte2 c on f.FRIEND1=c.FRIEND1	
-	left join cte2 c2 on f.FRIEND2=c2.FRIEND1
 )
-	-- select * from cte3
-select FRIEND1, FRIEND2, string_to_array(f1, ',') && string_to_array(f2, ',') from cte3
-
+select a.FRIEND1 a, a.FRIEND2 b, COUNT(*) AS common_friend
+from cte a 
+join cte b on a.FRIEND1=b.FRIEND1
+join cte c on a.FRIEND2=c.FRIEND1 and c.FRIEND2=b.FRIEND2
+group by 1, 2
+order by 3 desc

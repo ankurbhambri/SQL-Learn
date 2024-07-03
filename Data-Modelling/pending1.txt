@@ -1,6 +1,6 @@
 /*
 
-The interviewer shared the below sample data logs.
+Q1) The interviewer shared the below sample data logs.
 Given below sample data
 
 m0	p0	start	0.712
@@ -38,7 +38,7 @@ There can be multiple machine m0..mN, each machine can have millions of process 
 /*
 
 
-I am a CEO of a taxi company
+Q2) I am a CEO of a taxi company
 
 1) Desing a data model for taxi
 2) How do we measure success for the conpany to find KPI (Key Performance Indicator) data
@@ -53,5 +53,158 @@ Follow up sql questions
 6) I want to launch same taxi app in diffefent city like(london), so what data point we use to make it successful.
 7) what data point you add to measure success
 8) Few SOL to find out people wo took taxi for airport any country they i caly tent to open a newcount report)
+
+-- Solution
+
+1. Designing a Data Model for a Taxi Company
+
+Entity-Relationship Diagram (ERD)
+
+The data model for a taxi company should capture various aspects of the business, including drivers, vehicles, trips, 
+customers, and payments. Here’s a high-level overview of the entities and their relationships:
+
+Driver: Information about drivers.
+Vehicle: Information about the taxis.
+Customer: Information about customers.
+Trip: Information about each trip taken.
+Payment: Information about payments made for trips.
+Location: Information about pick-up and drop-off locations.
+Data Model Design
+Driver Table:
+
+
+CREATE TABLE Driver (
+    driver_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    license_number VARCHAR(50) NOT NULL UNIQUE,
+    phone_number VARCHAR(15),
+    hire_date DATE NOT NULL
+);
+Vehicle Table:
+
+
+CREATE TABLE Vehicle (
+    vehicle_id SERIAL PRIMARY KEY,
+    license_plate VARCHAR(15) NOT NULL UNIQUE,
+    make VARCHAR(50),
+    model VARCHAR(50),
+    year INT,
+    status VARCHAR(20) -- e.g., 'available', 'in service', 'under maintenance'
+);
+Customer Table:
+
+
+CREATE TABLE Customer (
+    customer_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(15) NOT NULL UNIQUE,
+    email VARCHAR(100),
+    registration_date DATE NOT NULL
+);
+Trip Table:
+
+
+CREATE TABLE Trip (
+    trip_id SERIAL PRIMARY KEY,
+    driver_id INT NOT NULL,
+    vehicle_id INT NOT NULL,
+    customer_id INT NOT NULL,
+    pick_up_location_id INT NOT NULL,
+    drop_off_location_id INT NOT NULL,
+    pick_up_time TIMESTAMP NOT NULL,
+    drop_off_time TIMESTAMP,
+    fare DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(20) NOT NULL, -- e.g., 'completed', 'canceled', 'ongoing'
+    FOREIGN KEY (driver_id) REFERENCES Driver(driver_id),
+    FOREIGN KEY (vehicle_id) REFERENCES Vehicle(vehicle_id),
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id),
+    FOREIGN KEY (pick_up_location_id) REFERENCES Location(location_id),
+    FOREIGN KEY (drop_off_location_id) REFERENCES Location(location_id)
+);
+Payment Table:
+
+
+CREATE TABLE Payment (
+    payment_id SERIAL PRIMARY KEY,
+    trip_id INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    payment_method VARCHAR(50), -- e.g., 'cash', 'credit card', 'online'
+    payment_time TIMESTAMP NOT NULL,
+    FOREIGN KEY (trip_id) REFERENCES Trip(trip_id)
+);
+Location Table:
+
+
+CREATE TABLE Location (
+    location_id SERIAL PRIMARY KEY,
+    address VARCHAR(255) NOT NULL,
+    city VARCHAR(100),
+    state VARCHAR(100),
+    zip_code VARCHAR(10),
+    latitude DECIMAL(9, 6),
+    longitude DECIMAL(9, 6)
+);
+
+2. Measuring Success: Key Performance Indicators (KPIs)
+
+To measure the success of the company, the following KPIs can be tracked:
+
+    Total Revenue: Sum of all fares and payments.
+    Total Number of Trips: Count of all completed trips.
+    Average Trip Duration: Average time taken per trip.
+    Average Fare per Trip: Average fare collected per trip.
+    Driver Utilization: Percentage of time drivers are actively engaged in trips.
+    Customer Satisfaction: Measured through ratings and feedback.
+    Vehicle Utilization: Percentage of time vehicles are in use.
+    Trip Cancellation Rate: Percentage of trips canceled.
+    New Customer Acquisition: Number of new customers registered.
+    Retention Rate: Percentage of returning customers.
+
+3. Example Tables and KPIs
+
+Example: Calculating Total Revenue
+SELECT SUM(amount) AS total_revenue
+FROM Payment;
+
+Example: Calculating Total Number of Trips
+SELECT COUNT(*) AS total_trips
+FROM Trip
+WHERE status = 'completed';
+
+Example: Calculating Average Trip Duration
+SELECT AVG(EXTRACT(EPOCH FROM (drop_off_time - pick_up_time)) / 60) AS avg_trip_duration_minutes
+FROM Trip
+WHERE status = 'completed';
+
+Example: Calculating Average Fare per Trip
+SELECT AVG(fare) AS avg_fare_per_trip
+FROM Trip
+WHERE status = 'completed';
+
+Example: Calculating Driver Utilization
+
+
+SELECT d.driver_id, d.name, 
+       (SUM(EXTRACT(EPOCH FROM (t.drop_off_time - t.pick_up_time)) / 3600) / 
+       (COUNT(DISTINCT DATE(t.pick_up_time)) * 8)) * 100 AS driver_utilization_percentage
+FROM Driver d
+JOIN Trip t ON d.driver_id = t.driver_id
+WHERE t.status = 'completed'
+GROUP BY d.driver_id, d.name;
+Example: Calculating Vehicle Utilization
+
+
+SELECT v.vehicle_id, v.license_plate, 
+       (SUM(EXTRACT(EPOCH FROM (t.drop_off_time - t.pick_up_time)) / 3600) / 
+       (COUNT(DISTINCT DATE(t.pick_up_time)) * 24)) * 100 AS vehicle_utilization_percentage
+FROM Vehicle v
+JOIN Trip t ON v.vehicle_id = t.vehicle_id
+WHERE t.status = 'completed'
+GROUP BY v.vehicle_id, v.license_plate;
+
+Summary
+
+The data model consists of Driver, Vehicle, Customer, Trip, Payment, and Location tables. Key Performance Indicators (KPIs) such as total revenue, number of trips, 
+average trip duration, average fare, driver and vehicle utilization, customer satisfaction, trip cancellation rate, new customer acquisition, and retention rate help measure the company's success.
 
 */
