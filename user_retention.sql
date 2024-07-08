@@ -108,7 +108,7 @@ GROUP BY 1, 2
 having COUNT(DISTINCT activity_date) >= 3
 
 
--- Lets do this one
+-- Lets do this one,
 /*
 
 Weekly Active Users: Users who have logged in at least once in a given week.
