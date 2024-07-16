@@ -1,5 +1,5 @@
 /*
-DROP table IF EXISTS  user_activity
+
 CREATE TABLE user_activity (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
