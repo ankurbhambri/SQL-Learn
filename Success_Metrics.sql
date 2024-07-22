@@ -1,7 +1,7 @@
 -- Daily Active Users (DAU)
 
 SELECT
-    DATE(activity_timestamp) AS activity_date,
+    activity_date,
     COUNT(DISTINCT user_id) AS dau
 FROM
     user_activity_log

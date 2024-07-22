@@ -57,11 +57,13 @@ Follow up sql questions
 6) I want to launch same taxi app in diffefent city like(london), so what data point we use to make it successful.
 8) Few SOL to find out people wo took taxi for airport any country they i caly tent to open a newcount report)
 
+*/
+
 -- Solution
 
-1. Designing a Data Model for a Taxi Company
+-- 1. Designing a Data Model for a Taxi Company
 
-Entity-Relationship Diagram (ERD)
+-- Entity-Relationship Diagram (ERD)
 
 The data model for a taxi company should capture various aspects of the business, including drivers, vehicles, trips, 
 customers, and payments. Here’s a high-level overview of the entities and their relationships:
@@ -204,6 +206,8 @@ FROM Vehicle v
 JOIN Trip t ON v.vehicle_id = t.vehicle_id
 WHERE t.status = 'completed'
 GROUP BY v.vehicle_id, v.license_plate;
+
+/*
 
 Summary
 
