@@ -24,8 +24,9 @@ Find people who only upload photos
 
 Dim_Date
 - date_id
-- timestamp
+- date
 - day
+- week
 - month
 - Quarter
 - year
@@ -53,48 +54,80 @@ Dim_Subscriptions
 - subscription_end_date (date_id)
 - isActive
 
-Fact_File
+Dim_File
 - file_id pk
 - user_id pk
 - file_name
 - file_type (video, audio, image, document)
 - file_size
-- IsFileShared (True, False)
 - file_upload_date (date_id)
 - file_upload_starttimestamp (date_id)
 - file_upload_completetimestamp (date_id)
 - file_status (Completed, Cancelled, Progress, Completed)
 - UNIQUE(file_id, user_id)
 
-Fact_Shared_Files
-- file_id
-- user_id
-- shared_user_id
-- share_date (date_id)
-- share_type (email, link, social_media)
-- access_type (view, edit, owner)
 
-Fact_Logs
-- action_id
-- date_id
+Fact_Files_Logs
 - file_id
-- user_id
-- action_type (upload, download, share, delete)
+- owner_user_id
+- date_id
+- shared_user_id null
+- is_ownser_shared (true, false)
+- share_date (date_id)
+- clicked_via (email, link, social_media) null
+- access_type (view, edit)
+- onwer_ship_transfer (true, false)
+- IsFileDownloadable (true, false)
 
 
 
 -- 1) Track how many files are Shared and % of Shared Files in a week.
-select count(file_id) from Fact_Logs group by date_id, action_type having action_type = 'share';
+with shared_files as (
+    select count(file_id) dc, date_id from Fact_Files_Logs where is_shared = true group by file_id, date_id
+)
+select b.week, sum(a.dc) from shared_files a join Dim_Date b on a.date_id = b.date_id group by b.week
+
 
 
 -- 2) what file type is shared more frequently ?
-select file_id, count(file_id) over(partition by file_id order by file_id) from Fact_Logs
+
+WITH shared_files AS (
+    SELECT 
+        f.file_type, 
+        COUNT(fl.file_id) AS share_count
+    FROM 
+        Fact_File f
+    JOIN 
+        Fact_Files_Logs fl ON f.file_id = fl.file_id
+    WHERE 
+        fl.is_shared = TRUE
+    GROUP BY 
+        f.file_type
+),
+ranked_shared_files AS (
+    SELECT 
+        file_type, 
+        share_count,
+        RANK() OVER (ORDER BY share_count DESC) AS rnk
+    FROM 
+        shared_files
+)
+SELECT 
+    file_type,
+    share_count,
+    rnk
+FROM 
+    ranked_shared_files;
 
 -- 3) How many files had more than one owner at a given time?
+
+select file_id, count(1) Fact_Files_Logs where is_shared = true and access_type = editor group by 1 having count(1) > 1
 
 -- 4) Total File Actions by Content Categories.
 
 -- 5) File is shared among multiple people
+
+select file, count(1) from Fact_Files_Logs where owner_id is not null and shared_user_id is not null group by file_id
 
 -- 6) One to record upload/download and the other to record shared assets
 

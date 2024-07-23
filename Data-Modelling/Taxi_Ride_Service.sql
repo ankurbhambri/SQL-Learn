@@ -12,7 +12,7 @@ How many trips are cancelled per day.
 
 How many rides and the average price during the peak hour per day.
 
-what data point you ade to measure success - DAU, MAU, WAU
+what data point you do to measure success the - DAU, MAU, WAU
 
 About driver and custoner in same table
 
@@ -28,10 +28,10 @@ Dim_Date
 - date_id
 - date
 - day
+- week
 - month
 - year
-- day_of_week
-- week_of_year
+
 
 Dim_user
 - user_id
@@ -53,7 +53,7 @@ Dim_Driver
 - vehicle_id
 - driver_license
 - driver_rating
-- driver_experience
+- driver_status (active, inactive)
 
 Dim_Location
 - Location_id, 
@@ -91,12 +91,13 @@ Fact_trips
 - trip_starttimestamp (date_id)
 - trip_endtimestamp (date_id)
 - trip_status (completed, cancelled, progress)
-- trip_rating
+- driver_rating
+- customer_rating
 
 
 -- 1) Track rides done by driver and their Performance
 
-SELECT driver_id, COUNT(distinct driver_id) as total_rides, AVG(trip_rating) as avg_rating from Fact_rides group by driver_id
+SELECT driver_id, COUNT(distinct driver_id) as total_rides, AVG(driver_rating) as avg_rating from Fact_rides group by driver_id
 
 -- 2) How many rides are happening to a common/famous destinations each day( Airports , Parks , Museums etc)
 

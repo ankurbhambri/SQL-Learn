@@ -5,16 +5,12 @@ CREATE TABLE Date_Dimension (
     Date_Key SERIAL PRIMARY KEY,
     Date DATE,
     Day INT,
+    Week INT,
     Month INT,
+    Quarter INT
     Year INT
 );
 
--- Create Time Dimension Table
-CREATE TABLE Time_Dimension (
-    Time_Key SERIAL PRIMARY KEY,
-    Hour INT,
-    Minute INT
-);
 
 -- Create User Dimension Table
 CREATE TABLE User_Dimension (
@@ -22,6 +18,7 @@ CREATE TABLE User_Dimension (
     User_ID VARCHAR(50),
     User_Name VARCHAR(100),
     User_Location VARCHAR(100)
+    date_id
 );
 
 -- Create Page Dimension Table

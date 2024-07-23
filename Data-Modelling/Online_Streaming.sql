@@ -46,12 +46,14 @@ Dim_Subscriptions
 - subscription_end_date (date_id) (fk)
 - isActive (true, false)
 
+
 Dim_Content
 - content_id
 - content_name
 - content_type (video, audio, image, document)
 - content_category
 - content_release_date (date_id)
+- Genre
 
 Fact_Streaming
 - streaming_id
@@ -59,14 +61,10 @@ Fact_Streaming
 - content_id (fk)
 - subscription_id (fk)
 - streaming_date (date_id)
-- streaming_duration
-- streaming_device
-- streaming_location
-- streaming_quality
-- streaming_status
-- streaming_rating
-- streaming_feedback
-- UNIQUE(streaming_id, user_id, content_id)
+- playback_start
+- playback_end
+- session_time
+- pause_time
 
 -- 1) How many users stream Daily/Monthly
 with dau as (select count(user_id) dau_active_user from Fact_Streaming group by streaming_date),
