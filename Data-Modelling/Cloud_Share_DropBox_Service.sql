@@ -72,7 +72,7 @@ Fact_Files_Logs
 - owner_user_id
 - date_id
 - shared_user_id null
-- is_ownser_shared (true, false)
+- is_owner_shared (true, false)
 - share_date (date_id)
 - clicked_via (email, link, social_media) null
 - access_type (view, edit)

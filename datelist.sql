@@ -108,15 +108,56 @@ DO UPDATE SET activity_date_int = activity_date_int_table.activity_date_int | EX
 -- Way to check whether that day from current day active or not, while checking the bit is active or not (right bit wise)
 select userid, (activity_date_int >> 1) & 1 from activity_date_int_table
 
--- Testing....
+-- Testing zone....
+
+-- Updating the user cummulative activity data with new data.
 UPDATE activity_date_int_table
 SET activity_date_int = activity_date_int | (1 << (CURRENT_DATE - '2024-07-22'::date))
 WHERE userid = 456;
 
-with cte as (select generate_series(current_date - interval '7 day', current_date - interval '1 day', '1 day') rg)
+
+-- Checking users last 7 day activity date wise
+
+-- generate_series(current_date - interval '7 day', current_date - interval '1 day', '1 day')
+-- activity_date_int >> (CURRENT_DATE - rg::date)) & 1
+
+with cte as (select generate_series(0, 6) rg)
 select
-	userid, rg,
-	(activity_date_int >> (CURRENT_DATE - rg::date)) & 1 as active
+	userid,
+	count(case when (activity_date_int >> (rg)) & 1 = 1 then 1 else 0 end) as week_active_lness
 from cte cross join activity_date_int_table
-group by 1,2
-order by rg desc
+group by 1
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+-- TODO
+
+CREATE OR REPLACE FUNCTION bit_counts(num BIGINT) RETURNS INT AS $$
+DECLARE
+    count INT := 0;
+BEGIN
+    WHILE num > 0 LOOP
+        count := count + (num & 1);
+        num := num >> 1;
+    END LOOP;
+    RETURN count;
+END;
+$$ LANGUAGE plpgsql;
+
+
+SELECT
+    userid, 
+	activity_date_int,
+	t.last_7_days_mask,
+	bit_counts(activity_date_int & t.last_7_days_mask) active_last_7_days
+FROM activity_date_int_table 
+cross join (SELECT 1023 AS last_7_days_mask) t
+
+
+SELECT
+    userid,
+    activity_date_int,
+    activity_date_int & cast(pow(2, 12) as int) - 1
+    -- LENGTH(REPLACE(((activity_date_int & ((1 << 11) - 1)::bigint))::bit(10))::text, '0', '')) AS last_10_days_data
+FROM activity_date_int_table

@@ -19,9 +19,9 @@ Dim_Date
 - date
 - day
 - month
+- week
+- quarter
 - year
-- day_of_week
-- week_of_year
 
 Dim_user
 - user_id
@@ -53,7 +53,8 @@ Dim_Content
 - content_type (video, audio, image, document)
 - content_category
 - content_release_date (date_id)
-- Genre
+- content_run_length -- if video then add else 0
+- genre
 
 Fact_Streaming
 - streaming_id

@@ -30,6 +30,7 @@ Dim_Date
 - day
 - week
 - month
+- quarter
 - year
 
 

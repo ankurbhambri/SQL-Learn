@@ -20,7 +20,7 @@ SELECT
 
 SELECT
   SUBSTR('example_string', 1, 3) AS first_three_chars,
-  SUBSTR('example_string', -3) AS last_three_chars
+  SUBSTR('example_string', 12, 3) AS last_three_chars
 
 -- LEFT, RIGHT
 
