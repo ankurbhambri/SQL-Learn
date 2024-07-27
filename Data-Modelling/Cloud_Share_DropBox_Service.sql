@@ -73,11 +73,10 @@ Fact_Files_Logs
 - date_id
 - shared_user_id null
 - is_owner_shared (true, false)
-- share_date (date_id)
 - clicked_via (email, link, social_media) null
 - access_type (view, edit)
-- onwer_ship_transfer (true, false)
-- IsFileDownloadable (true, false)
+- onwership_transfer (true, false)
+-- - IsFileDownloadable (true, false)
 
 
 
