@@ -63,76 +63,48 @@ WHERE active_date_list && ARRAY(SELECT generate_series(current_date - interval '
 
 
 -- Another approach - Bitwise
-
 /*
-
-CREATE TABLE user_adl (
+CREATE TABLE user_activity_int (
     userid BIGINT,
-    activity_date DATE
+    active_dt DATE
 );
 
-INSERT INTO user_adl (userid, activity_date) VALUES
-(456, '2024-07-07'),
-(123, '2024-07-07'),
-(123, '2024-07-10'),
-(456, '2024-07-11'),
-(123, '2024-07-12'),
+CREATE TABLE user_activity_int (
+    userid BIGINT,
+    active_dt_int BIGINT
+);
+
+INSERT INTO user_activity (userid, active_dt) VALUES
+(123, '2024-07-31'),
+(456, '2024-07-31'),
+(123, '2024-08-01'),
+(456, '2024-08-01'),
+(123, '2024-07-25'),
+(123, '2024-07-26'),
 (456, '2024-07-21'),
-(123, '2024-07-21'),
-(123, '2024-07-22');
-
-CREATE TABLE activity_date_int_table (
-    userid BIGINT PRIMARY KEY,
-    activity_date_int BIGINT
-);
+(123, '2024-07-22'),
+(456, '2024-08-04'),
+(456, '2024-08-02'),
+(123, '2024-08-04');
 
 */
 
-WITH date_bits AS (
-    SELECT
-        userid,
-        -- Calculate the bit position from current_date (2 ^ day) (left bit wise).
-        -- Then, BIT_OR to combine list of bitmask values.
-        BIT_OR(1 << (current_date - activity_date)) AS activity_date_int
-    FROM user_adl
-    GROUP BY userid
-	order by 2
-)
-INSERT INTO activity_date_int_table (userid, activity_date_int)
-SELECT userid, activity_date_int
-FROM date_bits
-ON CONFLICT (userid)
--- here again BIT_OR from previous day value to new value
-DO UPDATE SET activity_date_int = activity_date_int_table.activity_date_int | EXCLUDED.activity_date_int;
-
--- Way to check whether that day from current day active or not, while checking the bit is active or not (right bit wise)
-select userid, (activity_date_int >> 1) & 1 from activity_date_int_table
-
--- Testing zone....
-
--- Updating the user cummulative activity data with new data.
-UPDATE activity_date_int_table
-SET activity_date_int = activity_date_int | (1 << (CURRENT_DATE - '2024-07-22'::date))
-WHERE userid = 456;
-
-
--- Checking users last 7 day activity date wise
-
--- generate_series(current_date - interval '7 day', current_date - interval '1 day', '1 day')
--- activity_date_int >> (CURRENT_DATE - rg::date)) & 1
-
-with cte as (select generate_series(0, 6) rg)
+insert into user_activity_int(userid, active_dt_int)
 select
 	userid,
-	count(case when (activity_date_int >> (rg)) & 1 = 1 then 1 else 0 end) as week_active_lness
-from cte cross join activity_date_int_table
-group by 1
+	BIT_OR(1 << (current_date - active_dt)) active_dt_int
+from user_activity group by userid
+
+select * from user_activity_int
+	
+-- User active on _th day, calculating diff using current date
+select userid, current_date - active_dt from user_activity order by 1, 2
+
+-- checking which user is active on 2nd day
+select userid, (active_dt_int >> 2) & 1 from user_activity_int
 
 
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------
--- TODO
-
+-- custome function to count active bits in a integer
 CREATE OR REPLACE FUNCTION bit_counts(num BIGINT) RETURNS INT AS $$
 DECLARE
     count INT := 0;
@@ -144,20 +116,9 @@ BEGIN
     RETURN count;
 END;
 $$ LANGUAGE plpgsql;
-
-
-SELECT
-    userid, 
-	activity_date_int,
-	t.last_7_days_mask,
-	bit_counts(activity_date_int & t.last_7_days_mask) active_last_7_days
-FROM activity_date_int_table 
-cross join (SELECT 1023 AS last_7_days_mask) t
-
-
-SELECT
-    userid,
-    activity_date_int,
-    activity_date_int & cast(pow(2, 12) as int) - 1
-    -- LENGTH(REPLACE(((activity_date_int & ((1 << 11) - 1)::bigint))::bit(10))::text, '0', '')) AS last_10_days_data
-FROM activity_date_int_table
+	
+-- To calculate last 7 days activity Lness7 
+-- Here, left shift ((1 << 7) - 1) will give 128 - 1 = 127
+-- and last we are doing bitwise_and where only 1, 1 will give 1 else 0
+-- once done count 1 as active days for a user
+select userid, bit_counts(active_dt_int & (1 << 7) - 1) from user_activity_int
