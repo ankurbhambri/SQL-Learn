@@ -75,6 +75,9 @@ WHERE active_date_list && ARRAY(SELECT generate_series(current_date - interval '
 Another approach - Bitwise operation
 ###### ###### ###### ###### ######## ######
 
+Prequesites
+1. 1 << number is equivalent to 2 ^ n this is called left bitwise operator
+
 */
 
 /*
