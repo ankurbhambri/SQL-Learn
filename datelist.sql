@@ -153,7 +153,9 @@ $$ LANGUAGE plpgsql;
     3. Count the number of active days:
         Count the number of 1s in the result of the bitwise AND operation to determine how many days the user was active in the last 7 days.
 
-    4. By subtracting 1 from 128, you turn the binary number 10000000 into 01111111. 
+    4. By subtracting 1 from 128, you turn the binary number 10000000 into 01111111.
+
+    5. Finally, very simple just bitwise AND operator (&) to match if 1 is active in both nnumbers at same index, then keep it one and last we are just counting the set bits using our custom function - bit_counts
 
 */
 
