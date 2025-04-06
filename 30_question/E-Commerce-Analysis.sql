@@ -104,10 +104,7 @@ customer_orders AS (
     SELECT 
         o.customer_id,
         SUM(o.total_amount) AS total_spent,
-        SUM(o.total_amount) OVER (
-            PARTITION BY o.customer_id 
-            ORDER BY o.order_date
-        ) AS running_total_spent
+        SUM(o.total_amount) OVER (PARTITION BY o.customer_id ORDER BY o.order_date) AS running_total_spent
     FROM orders o
     JOIN filtered_customers fc ON o.customer_id = fc.customer_id
     WHERE o.order_date >= '2024-10-05' 
@@ -140,10 +137,8 @@ most_ordered_products AS (
         p.product_name AS most_ordered_product,
         p.product_id,
         COUNT(oi.order_item_id) AS order_count,
-        ROW_NUMBER() OVER (
-            PARTITION BY co.customer_id 
-            ORDER BY COUNT(oi.order_item_id) DESC
-        ) AS rn
+        ROW_NUMBER() OVER (PARTITION BY co.customer_id ORDER BY COUNT(oi.order_item_id) DESC) AS rn
+
     FROM customer_orders co
     JOIN orders o ON co.customer_id = o.customer_id
     LEFT JOIN order_items oi ON o.order_id = oi.order_id
@@ -186,6 +181,4 @@ top_customers AS (
     ORDER BY co.total_spent DESC
     LIMIT 5
 )
-
--- Final result
 SELECT * FROM top_customers;
